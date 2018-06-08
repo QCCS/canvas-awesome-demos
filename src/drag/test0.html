@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="http://www.softwhy.com/" />
+    <title>canvas长方形拖拽</title>
+    <script>
+        window.onload = function() {
+            var can = document.getElementById('box'),
+                gd = can.getContext('2d'),
+                x = 0,
+                y = 0,
+                w = 100,
+                h = 100;
+            gd.fillStyle = 'red';
+            //绘制一个长方形
+            gd.fillRect(x, y, w, h);
+
+
+            can.onmousedown = function(ev) {
+                var ev = ev || window.event;
+                var downx = ev.clientX;
+                var downy = ev.clientY;
+                //检测鼠标在长方形区间以内
+                if (downx > x && downy < x + w && downy > y && downy < y + h) {
+                    var disx = downx - x;
+                    var disy = downy - y;
+                    can.onmousemove = function(ev) {
+                        var ev = ev || window.event;
+                        x = ev.clientX - disx;
+                        y = ev.clientY - disy;
+                        gd.clearRect(0, 0, can.width, can.height);
+                        gd.fillRect(x, y, w, h);
+                    }
+
+                    can.onmouseup = function() {
+                        can.onmousemove = null;
+                        can.onmouseup = null;
+                    }
+                    return false;
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<canvas id="box" width="800" height="800"></canvas>
+</body>
+</html>
