@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="author" content="http://www.softwhy.com/" />
+    <title>canvas两个长方形拖拽</title>
+    <style>
+        #box{
+            background: darkcyan;
+        }
+    </style>
+
+</head>
+<body>
+<canvas id="box" width="800" height="800"></canvas>
+</body>
+<script>
+    window.onload = function() {
+        var canvas = document.getElementById('box');
+        var ctx = canvas.getContext('2d');
+        var rect1 = {
+            x : 0,
+            y : 0,
+            w : 100,
+            h : 100,
+            color:'red'
+        }
+        var rect2 = {
+            x : 40,
+            y : 40,
+            w : 100,
+            h : 100,
+            color:'green'
+        }
+
+        var drawRect = function (obj) {
+            ctx.beginPath();
+            ctx.fillStyle = obj.color;
+            ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
+            ctx.stroke();
+        }
+        drawRect(rect1);
+        drawRect(rect2);
+
+        function isInPath (x, y,obj){
+            ctx.beginPath();
+            ctx.rect(obj.x, obj.y, obj.w, obj.h);
+            return ctx.isPointInPath(x, y)
+        }
+        canvas.addEventListener('click', function(e){
+            console.log(e.offsetX)
+            console.log(e.offsetY)
+            if(isInPath(e.offsetX, e.offsetY,rect1)) {
+                console.log('hello rect1')
+            }
+        },false)
+
+        canvas.addEventListener('click', function(e){
+            console.log(e.offsetX)
+            console.log(e.offsetY)
+            if(isInPath(e.offsetX, e.offsetY,rect2)) {
+                console.log('hello rect2')
+            }
+        },false)
+
+//        canvas.addEventListener('mousemove', function(e){
+//            console.log(e.offsetX)
+//            console.log(e.offsetY)
+//            if(isInPath(e.offsetX, e.offsetY,rect2)) {
+//                console.log('hello rect2')
+//            }
+//        })
+
+    }
+</script>
+</html>
