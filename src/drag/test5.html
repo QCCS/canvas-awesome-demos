@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="author" content="http://www.softwhy.com/" />
+    <meta name="author" content="http://www.softwhy.com/"/>
     <title>canvas事件系统</title>
 
 </head>
@@ -10,8 +10,9 @@
 <canvas id="box" width="800" height="800"></canvas>
 </body>
 <script>
-    window.onload = function() {
+    window.onload = function () {
         var superCanvas = {};
+        //初始化画布
         superCanvas.init = function (id) {
             this.canvas = document.getElementById(id);
             this.ctx = this.canvas.getContext('2d');
@@ -27,72 +28,99 @@
         superCanvas.drawCirle = function drawRect(obj) {
             this.ctx.beginPath();
             this.ctx.fillStyle = obj.color;
-            this.ctx.arc(obj.x , obj.y , obj.r , 0 , Math.PI*2);
+            this.ctx.arc(obj.x, obj.y, obj.r, 0, Math.PI * 2);
             this.ctx.fill();
             this.ctx.closePath();
             this.ctx.stroke();
         }
-
+        //清除画布
+        superCanvas.clear = function () {
+            superCanvas.ctx.clearRect(0, 0, superCanvas.canvas.width, superCanvas.canvas.height);
+        }
         //是否在矩形里面
-        superCanvas.isInPath = function isInPath (x, y,obj){
+        superCanvas.isInPath = function isInPath(x, y, obj) {
             this.ctx.beginPath();
             //每次检测的时候，都需要从新绘制一次
-            if(obj.type === 'rect'){
+            if (obj.type === 'rect') {
                 this.ctx.rect(obj.x, obj.y, obj.w, obj.h);
             }
-            if(obj.type === 'cirle'){
-                this.ctx.arc(obj.x , obj.y , obj.r , 0 , Math.PI*2);
+            if (obj.type === 'cirle') {
+                this.ctx.arc(obj.x, obj.y, obj.r, 0, Math.PI * 2);
             }
             return this.ctx.isPointInPath(x, y)
         }
         //添加事件
-        superCanvas.addEvent = function addEvent(obj,e,callback) {
-            function func(e,obj){
-                if(superCanvas.isInPath(e.offsetX, e.offsetY,obj)) {
+        superCanvas.addEvent = function addEvent(obj, e, callback) {
+            function func(e, obj) {
+                if (superCanvas.isInPath(e.offsetX, e.offsetY, obj)) {
                     callback(e);
                 }
             }
-            this.canvas.addEventListener(e,function (e) {
-                func(e,obj);
-            },false);
+
+            this.canvas.addEventListener(e, function (e) {
+                func(e, obj);
+            }, false);
+        }
+        //绘制画布上全部内容
+        superCanvas.drawAll = function drawAll() {
+            superCanvas.drawRect(rect1);
+//            superCanvas.drawRect(rect2);
+//            superCanvas.drawCirle(cirle);
         }
 
         //初始化画布
         superCanvas.init("box");
         var rect1 = {
-            x : 0,
-            y : 0,
-            w : 100,
-            h : 100,
-            color:'red',
-            type:"rect"
+            x: 0,
+            y: 0,
+            w: 100,
+            h: 100,
+            color: 'red',
+            type: "rect"
         }
         var rect2 = {
-            x : 40,
-            y : 40,
-            w : 100,
-            h : 100,
-            color:'green',
-            type:"rect"
+            x: 40,
+            y: 40,
+            w: 100,
+            h: 100,
+            color: 'green',
+            type: "rect"
         }
         var cirle = {
-            x : 200,
-            y : 300,
+            x: 200,
+            y: 300,
             r: 100,
-            color:'gray',
-            type:"cirle"
+            color: 'gray',
+            type: "cirle"
         }
 
-        superCanvas.drawRect(rect1);
-        superCanvas.drawRect(rect2);
-        superCanvas.drawCirle(cirle);
-        superCanvas.addEvent(rect1,'click', function(e){
-           console.log(e)
+        superCanvas.drawAll();
+        superCanvas.addEvent(rect1, 'mousedown', function (e) {
+            var downx = e.clientX;
+            var downy = e.clientY;
+            var originX = rect1.x;
+            var originY = rect1.y;
+            superCanvas.addEvent(rect1, 'mousemove', function (e) {
+                console.log(e.clientX - downx)
+                console.log(e.clientY - downy)
+                console.log(rect1)
+                rect1.x = originX + (e.clientX - downx);
+                rect1.y = originY + (e.clientY - downy);
+                superCanvas.clear();
+                superCanvas.drawAll();
+            })
+            superCanvas.addEvent(rect1, 'mouseup', function (e) {
+                superCanvas.canvas.onmousemove = null;
+                superCanvas.canvas.onmouseup = null;
+            })
         })
-        superCanvas.addEvent(rect2,'click', function(e){
-           console.log(e)
+        superCanvas.addEvent(rect1, 'click', function (e) {
+            console.log(e)
         })
-        superCanvas.addEvent(cirle,'click', function(e){
+        superCanvas.addEvent(rect2, 'click', function (e) {
+            console.log(e)
+        })
+        superCanvas.addEvent(cirle, 'click', function (e) {
             console.log(e)
         })
 
